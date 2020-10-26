@@ -4,7 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
+	"bytes"
+	"log"
 )
 
 func main() {
@@ -15,6 +18,17 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
-	command := strings.Join(flag.Args(), " ")
-	fmt.Printf("Email %s\nCommand %s\n", *emailPtr, command)
+
+	// Execute command
+	givenCmd := strings.Join(flag.Args(), " ")
+	var out bytes.Buffer
+	cmd := exec.Command(givenCmd)
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Email %s\nCommand %s\n", *emailPtr, givenCmd)
+	fmt.Printf(out.String())
 }
